@@ -21,12 +21,14 @@ export default class ColumnChart {
   render() {
     const wrapper = document.createElement("div");
 
-    wrapper.innerHTML = this.getTemplate();
+    wrapper.innerHTML = this.template;
     this.element = wrapper.firstElementChild;
   }
 
   update(data = []) {
     this.data = data;
+
+    this.subElements.body.innerHTML = this.chartColumn;
   }
 
   remove() {
@@ -40,7 +42,7 @@ export default class ColumnChart {
     this.element = null;
   }
 
-  getTemplate() {
+  get template() {
     return `
       <div 
       class="column-chart ${!this.data.length ? "column-chart_loading" : ""}" 
@@ -54,14 +56,14 @@ export default class ColumnChart {
             ${this.value}
           </div>
           <div data-element="body" class="column-chart__chart">
-            ${this.charts}
+            ${this.chartColumn}
           </div>
         </div>
       </div>
     `;
   }
 
-  get charts() {
+  get chartColumns() {
     const maxValue = Math.max(...this.data);
     const scale = this.chartHeight / maxValue;
 
@@ -73,5 +75,18 @@ export default class ColumnChart {
         return `<div style="--value: ${value}" data-tooltip="${percent}%"></div>`;
       })
       .join("");
+  }
+
+  get subElements() {
+    const result = {};
+    const elements = this.element.querySelectorAll("[data-element]");
+
+    for (const subElement of elements) {
+      const name = subElement.dataset.element;
+
+      result[name] = subElement;
+    }
+
+    return result;
   }
 }
