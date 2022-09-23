@@ -1,5 +1,6 @@
 export default class ColumnChart {
   chartHeight = 50;
+  subElements = {};
 
   constructor({
     data = [],
@@ -23,12 +24,13 @@ export default class ColumnChart {
 
     wrapper.innerHTML = this.template;
     this.element = wrapper.firstElementChild;
+    this.subElements = this.getSubElements();
   }
 
   update(data = []) {
     this.data = data;
 
-    this.subElements.body.innerHTML = this.chartColumn;
+    this.subElements.body.innerHTML = this.chartColumns;
   }
 
   remove() {
@@ -40,6 +42,7 @@ export default class ColumnChart {
   destroy() {
     this.remove();
     this.element = null;
+    this.subElements = {};
   }
 
   get template() {
@@ -56,7 +59,7 @@ export default class ColumnChart {
             ${this.value}
           </div>
           <div data-element="body" class="column-chart__chart">
-            ${this.chartColumn}
+            ${this.chartColumns}
           </div>
         </div>
       </div>
@@ -77,13 +80,12 @@ export default class ColumnChart {
       .join("");
   }
 
-  get subElements() {
+  getSubElements() {
     const result = {};
     const elements = this.element.querySelectorAll("[data-element]");
 
     for (const subElement of elements) {
       const name = subElement.dataset.element;
-
       result[name] = subElement;
     }
 
