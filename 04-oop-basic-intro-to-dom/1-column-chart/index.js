@@ -67,9 +67,10 @@ export default class ColumnChart {
 
     return this.data
       .map(function (elem) {
-        return `<div style="--value: ${String(
-          Math.floor(elem * scale)
-        )}" data-tooltip="${((elem / maxValue) * 100).toFixed(0)}%"></div>`;
+        const percent = ((elem / maxValue) * 100).toFixed(0);
+        const value = Math.floor(elem * scale);
+
+        return `<div style="--value: ${value}" data-tooltip="${percent}%"></div>`;
       })
       .join("");
   }
