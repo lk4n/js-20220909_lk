@@ -52,7 +52,7 @@ export default class ColumnChart {
       style="--chart-height: ${this.chartHeight}">
         <div class="column-chart__title">
           Total ${this.label}
-          <a class="column-chart__link" href="${this.link || "#"}">View all</a>
+          ${this.anchor}
         </div>
         <div class="column-chart__container">
           <div data-element="header" class="column-chart__header">
@@ -78,6 +78,16 @@ export default class ColumnChart {
         return `<div style="--value: ${value}" data-tooltip="${percent}%"></div>`;
       })
       .join("");
+  }
+
+  get anchor() {
+    let result = "";
+
+    if (this.link) {
+      result = `<a class="column-chart__link" href="${this.link}">View all</a>`;
+    }
+
+    return result;
   }
 
   getSubElements() {
