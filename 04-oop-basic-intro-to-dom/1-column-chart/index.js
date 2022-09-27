@@ -81,13 +81,9 @@ export default class ColumnChart {
   }
 
   get anchor() {
-    let result = "";
-
-    if (this.link) {
-      result = `<a class="column-chart__link" href="${this.link}">View all</a>`;
-    }
-
-    return result;
+    return this.link
+      ? `<a class="column-chart__link" href="${this.link}">View all</a>`
+      : "";
   }
 
   getSubElements() {
