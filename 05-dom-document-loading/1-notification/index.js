@@ -1,5 +1,6 @@
 export default class NotificationMessage {
   timeoutID;
+  singleton;
 
   constructor(message = "", { duration = 2000, type = "success" } = {}) {
     this.message = message;
@@ -39,6 +40,11 @@ export default class NotificationMessage {
     node.append(this.element);
 
     this.timeoutID = setTimeout(this.remove.bind(this), this.duration);
+
+    if (NotificationMessage.singleton) {
+      NotificationMessage.singleton.remove();
+    }
+    NotificationMessage.singleton = this;
   }
 
   remove() {
