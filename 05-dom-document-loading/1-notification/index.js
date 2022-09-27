@@ -1,4 +1,6 @@
 export default class NotificationMessage {
+  timeoutID;
+
   constructor(message = "", { duration = 2000, type = "success" } = {}) {
     this.message = message;
     this.duration = duration;
@@ -9,11 +11,13 @@ export default class NotificationMessage {
 
   get template() {
     return `
-      <div class="notification ${this.type}" 
-        style="--value:${this.duration / 1000}s">
+      <div 
+        class="notification ${this.type}" 
+        style="--value:${this.duration / 1000}s"
+      >
         <div class="timer"></div>
         <div class="inner-wrapper">
-          <div class="notification-header">success</div>
+          <div class="notification-header">Notification - ${this.type}</div>
           <div class="notification-body">
             ${this.message}
           </div>
@@ -29,10 +33,12 @@ export default class NotificationMessage {
     this.element = wrapper.firstElementChild;
   }
 
-  show() {
-    const parent = document.body;
+  show(node) {
+    node = node || document.body;
 
-    parent.append(this.element);
+    node.append(this.element);
+
+    this.timeoutID = setTimeout(this.remove.bind(this), this.duration);
   }
 
   remove() {
