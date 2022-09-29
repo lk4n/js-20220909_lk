@@ -1,6 +1,8 @@
 export default class NotificationMessage {
+  static prevNotification;
+
+  element;
   timeoutID;
-  singleton;
 
   constructor(message = "", { duration = 2000, type = "success" } = {}) {
     this.message = message;
@@ -41,20 +43,22 @@ export default class NotificationMessage {
 
     this.timeoutID = setTimeout(this.remove.bind(this), this.duration);
 
-    if (NotificationMessage.singleton) {
-      NotificationMessage.singleton.remove();
+    if (NotificationMessage.prevNotification) {
+      NotificationMessage.prevNotification.remove();
     }
-    NotificationMessage.singleton = this;
+    NotificationMessage.prevNotification = this;
   }
 
   remove() {
     if (this.element) {
       this.element.remove();
     }
+    clearTimeout(this.timerId);
   }
 
   destroy() {
     this.remove();
     this.element = null;
+    NotificationMessage.prevNotification = null;
   }
 }

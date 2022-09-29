@@ -1,6 +1,7 @@
 export default class ColumnChart {
   chartHeight = 50;
   subElements = {};
+  element;
 
   constructor({
     data = [],
