@@ -20,22 +20,22 @@ export default class SortableTable {
 
   get templateTableHeader() {
     return `
-    <div data-element="header" class="sortable-table__header sortable-table__row">
-      ${this.headerConfig
-        .map(function (configItem) {
-          const { id, title, sortable } = configItem;
+      <div data-element="header" class="sortable-table__header sortable-table__row">
+        ${this.headerConfig
+          .map(function (configItem) {
+            const { id, title, sortable } = configItem;
 
-          return `
-            <div class="sortable-table__cell" data-id="${id}" data-sortable="${sortable}">
-              <span>${title}</span>
-              <span data-element="arrow" class="sortable-table__sort-arrow">
-              <span class="sort-arrow"></span>
-              </span>
-            </div>
-          `;
-        })
-        .join("")}
-    </div>
+            return `
+              <div class="sortable-table__cell" data-id="${id}" data-sortable="${sortable}">
+                <span>${title}</span>
+                <span data-element="arrow" class="sortable-table__sort-arrow">
+                <span class="sort-arrow"></span>
+                </span>
+              </div>
+            `;
+          })
+          .join("")}
+      </div>
     `;
   }
 
@@ -91,21 +91,23 @@ export default class SortableTable {
   }
 
   sortData(field, order) {
+    const dataToSort = Array.from(this.data);
     const column = this.headerConfig.find(function (item) {
       return item.id === field;
     });
+    const { sortType } = column;
     const direction = {
       asc: 1,
       desc: -1,
     };
-    const sign = direction[order];
+    const directionSign = direction[order];
 
-    return [...this.data].sort((a, b) => {
-      switch (column.sortType) {
+    return dataToSort.sort(function (a, b) {
+      switch (sortType) {
         case "number":
-          return sign * (a[field] - b[field]);
+          return directionSign * (a[field] - b[field]);
         case "string":
-          return sign * a[field].localeCompare(b[field], ["ru", "en"]);
+          return directionSign * a[field].localeCompare(b[field], ["ru", "en"]);
         default:
           throw new Error("Sort order not defined");
       }
@@ -120,6 +122,7 @@ export default class SortableTable {
     const element = wrapper.firstElementChild;
 
     this.element = element;
+
     this.subElements = this.getSubElements(element);
   }
 
