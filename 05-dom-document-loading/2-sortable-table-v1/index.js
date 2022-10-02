@@ -82,6 +82,7 @@ export default class SortableTable {
       `.sortable-table__cell[data-id="${field}"]`
     );
 
+    //Markup: clear previous arrows and set for current column only
     allColumns.forEach(function (column) {
       column.dataset.order = "";
     });
@@ -109,7 +110,7 @@ export default class SortableTable {
         case "string":
           return directionSign * a[field].localeCompare(b[field], ["ru", "en"]);
         default:
-          throw new Error("Sort order not defined");
+          throw new Error("Sort type not defined");
       }
     });
   }
