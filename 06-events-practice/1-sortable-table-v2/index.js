@@ -21,11 +21,11 @@ export default class SortableTable {
     this.render();
   }
 
-  get template() {
+  getTemplate(data) {
     return `
       <div class="sortable-table">
         ${this.templateTableHeader}
-        ${this.templateTableBody}
+        ${this.getTemplateTableBody(data)}
       </div>
     `;
   }
@@ -36,30 +36,39 @@ export default class SortableTable {
         ${this.headerConfig
           .map(function (configItem) {
             const { id, title, sortable } = configItem;
+            const order = this.sorted.id === id ? this.sorted.order : "asc";
 
             return `
-              <div class="sortable-table__cell" data-id="${id}" data-sortable="${sortable}">
+              <div class="sortable-table__cell" data-id="${id}" data-sortable="${sortable}" data-order="${order}">
                 <span>${title}</span>
-                <span data-element="arrow" class="sortable-table__sort-arrow">
-                <span class="sort-arrow"></span>
-                </span>
+                ${this.getHeaderSortingArrow(id)}
               </div>
             `;
-          })
+          }, this)
           .join("")}
       </div>
     `;
   }
 
-  get templateTableBody() {
+  getHeaderSortingArrow(id) {
+    if (this.sorted.id === id) {
+      return `<span data-element="arrow" class="sortable-table__sort-arrow">
+    <span class="sort-arrow"></span>
+  </span>`;
+    }
+
+    return "";
+  }
+
+  getTemplateTableBody(data) {
     return `
       <div data-element="body" class="sortable-table__body">
-        ${this.getTemplateTableRows(this.data)}
+        ${this.getTemplateTableRows(data)}
       </div>
     `;
   }
 
-  getTemplateTableRows(data = []) {
+  getTemplateTableRows(data) {
     return data
       .map(function (dataItem) {
         return `
@@ -85,30 +94,58 @@ export default class SortableTable {
       .join("");
   }
 
-  sort(field, order) {
-    const sortedData = this.sortData(field, order);
-    const allColumns = this.element.querySelectorAll(
-      ".sortable-table__cell[data-id]"
-    );
-    const currentColumn = this.element.querySelector(
-      `.sortable-table__cell[data-id="${field}"]`
-    );
+  render() {
+    const wrapper = document.createElement("div");
+    const { id, order } = this.sorted;
+    const sortedData = this.sortData(id, order);
 
-    //Markup: clear previous arrows and set for current column only
-    allColumns.forEach(function (column) {
-      column.dataset.order = "";
-    });
-    currentColumn.dataset.order = order;
+    wrapper.innerHTML = this.getTemplate(sortedData);
+    this.element = wrapper.firstElementChild;
+    this.subElements = this.getSubElements(this.element);
+    this.initEventListeners();
+  }
 
-    this.subElements.body.innerHTML = this.getTemplateTableRows(sortedData);
+  initEventListeners() {
+    this.subElements.header.addEventListener(
+      "pointerdown",
+      this.onClickSort.bind(this)
+    );
+  }
+
+  onClickSort(event) {
+    const column = event.target.closest('[data-sortable="true"]');
+
+    const toggleOrder = function (order) {
+      const orders = {
+        asc: "desc",
+        desc: "asc",
+      };
+
+      return orders[order];
+    };
+
+    if (column) {
+      const { id, order } = column.dataset;
+      const newOrder = toggleOrder(order); // undefined
+      const sortedData = this.sortData(id, newOrder);
+      const arrow = column.querySelector(".sortable-table__sort-arrow");
+
+      column.dataset.order = newOrder;
+
+      if (!arrow) {
+        column.append(this.subElements.arrow);
+      }
+
+      this.subElements.body.innerHTML = this.getTemplateTableRows(sortedData);
+    }
   }
 
   sortData(field, order) {
-    const dataToSort = Array.from(this.data);
+    const dataToSort = [...this.data];
     const column = this.headerConfig.find(function (item) {
       return item.id === field;
     });
-    const { sortType } = column;
+    const { sortType, customSorting } = column;
     const direction = {
       asc: 1,
       desc: -1,
@@ -121,22 +158,12 @@ export default class SortableTable {
           return directionSign * (a[field] - b[field]);
         case "string":
           return directionSign * a[field].localeCompare(b[field], ["ru", "en"]);
+        case "custom":
+          return directionSign * customSorting(a, b);
         default:
-          throw new Error("Sort type not defined");
+          throw new Error("Sorting type not defined");
       }
     });
-  }
-
-  render() {
-    const wrapper = document.createElement("div");
-
-    wrapper.innerHTML = this.template;
-
-    const element = wrapper.firstElementChild;
-
-    this.element = element;
-
-    this.subElements = this.getSubElements(element);
   }
 
   getSubElements(element) {
