@@ -1,6 +1,7 @@
 export default class ColumnChart {
   chartHeight = 50;
   subElements = {};
+  element;
 
   constructor({
     data = [],
@@ -23,8 +24,11 @@ export default class ColumnChart {
     const wrapper = document.createElement("div");
 
     wrapper.innerHTML = this.template;
-    this.element = wrapper.firstElementChild;
-    this.subElements = this.getSubElements();
+
+    const element = wrapper.firstElementChild;
+
+    this.element = element;
+    this.subElements = this.getSubElements(element);
   }
 
   update(data = []) {
@@ -86,9 +90,9 @@ export default class ColumnChart {
       : "";
   }
 
-  getSubElements() {
+  getSubElements(element) {
     const result = {};
-    const elements = this.element.querySelectorAll("[data-element]");
+    const elements = element.querySelectorAll("[data-element]");
 
     for (const subElement of elements) {
       const name = subElement.dataset.element;
