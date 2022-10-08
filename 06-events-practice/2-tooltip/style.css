@@ -1,4 +1,6 @@
 .tooltip {
+  width: max-content;
+  height: max-content;
   cursor: pointer;
   position: fixed;
   padding: 8px 12px;
