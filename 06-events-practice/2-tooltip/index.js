@@ -31,14 +31,14 @@ class Tooltip {
 
   moveTooltip(event) {
     const shift = 10;
-    const shiftCoefficient = 1.2;
+    const shiftCoefficient = 1.8;
     const tooltipRect = this.element.getBoundingClientRect();
     const left = event.clientX + shift;
     const top = event.clientY + shift;
     const right = left + tooltipRect.width;
     const bottom = top + tooltipRect.height;
-    const windowWith =
-      document.documentElement.clientWidth || window.innerWidth;
+    const windowWith = document.documentElement.clientWidth;
+    const windowHeight = document.documentElement.clientHeight;
 
     this.element.style.left =
       right > windowWith
@@ -46,7 +46,7 @@ class Tooltip {
         : `${left}px`;
 
     this.element.style.top =
-      bottom > window.innerHeight
+      bottom > windowHeight
         ? `${top - tooltipRect.height - shift * shiftCoefficient}px`
         : `${top}px`;
   }
