@@ -34,18 +34,19 @@ export default class SortableTable {
     return `
       <div data-element="header" class="sortable-table__header sortable-table__row">
         ${this.headerConfig
-          .map(function (configItem) {
-            const { id, title, sortable } = configItem;
-            const order = this.sorted.id === id ? this.sorted.order : "asc";
-
-            return `
-              <div class="sortable-table__cell" data-id="${id}" data-sortable="${sortable}" data-order="${order}">
-                <span>${title}</span>
-                ${this.getHeaderSortingArrow(id)}
-              </div>
-            `;
-          }, this)
+          .map((configItem) => this.getTemplateHeaderRow(configItem))
           .join("")}
+      </div>
+    `;
+  }
+
+  getTemplateHeaderRow({ id, title, sortable }) {
+    const order = this.sorted.id === id ? this.sorted.order : "asc";
+
+    return `
+      <div class="sortable-table__cell" data-id="${id}" data-sortable="${sortable}" data-order="${order}">
+        <span>${title}</span>
+        ${this.getHeaderSortingArrow(id)}
       </div>
     `;
   }
