@@ -85,8 +85,7 @@ export default class ColumnChart {
 
   getHeaderValue(data) {
     return this.formatHeading(
-      // Object.values(data).reduceRight((accum, item) => accum + item, 0)
-      eval(Object.values(data).join("+")) // ^-^
+      Object.values(data).reduce((accum, item) => accum + item, 0)
     );
   }
 

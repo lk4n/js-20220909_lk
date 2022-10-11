@@ -16,9 +16,7 @@ export default class SortableTable {
     {
       url = "",
       sorted = {
-        id: headerConfig.find(function (item) {
-          return item.sortable;
-        }).id,
+        id: headerConfig.find((item) => item.sortable).id,
         order: "asc",
       },
       isSortLocally = false,
@@ -54,17 +52,8 @@ export default class SortableTable {
       const newOrder = toggleOrder(order);
       this.sorted = { id, order: newOrder };
 
-      // const sortedData = this.sortData(id, newOrder);
-      // const arrow = column.querySelector(".sortable-table__sort-arrow");
-
       column.dataset.order = newOrder;
-      column.append(this.subElements.arrow); // --
-
-      // if (!arrow) {
-      //   column.append(this.subElements.arrow);
-      // }
-
-      // this.subElements.body.innerHTML = this.getTemplateTableRows(sortedData);
+      column.append(this.subElements.arrow); // add arrow from cache to column
 
       if (this.isSortLocally) {
         this.sortOnClient(id, newOrder);
