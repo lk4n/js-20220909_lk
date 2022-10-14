@@ -134,15 +134,16 @@ export default class SortableTable {
       <div class="sortable-table">
         ${this.templateTableHeader}
         ${this.getTemplateTableBody(this.data)}
-      </div>
 
-      <div data-element="loading" class="loading-line sortable-table__loading-line"></div>
+        <div data-element="loading" class="loading-line sortable-table__loading-line"></div>
 
-      <div data-element="emptyPlaceholder" class="sortable-table__empty-placeholder">
-        <div>
-          <p>No products satisfies your filter criteria</p>
-          <button type="button" class="button-primary-outline">Reset all filters</button>
+        <div data-element="emptyPlaceholder" class="sortable-table__empty-placeholder">
+          <div>
+            <p>No products satisfies your filter criteria</p>
+            <button type="button" class="button-primary-outline">Reset all filters</button>
+          </div>
         </div>
+
       </div>
     `;
   }
