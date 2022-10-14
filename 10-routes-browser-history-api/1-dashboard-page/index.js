@@ -11,10 +11,13 @@ const BACKEND_URL = "https://course-js.javascript.ru/";
 export default class Page {
   subElements = {};
   components = {};
+  progress;
   element;
   urls = {};
 
   constructor() {
+    this.progress = document.querySelectorAll(".progress-bar")[0];
+
     this.urls = {
       customers: "api/dashboard/customers",
       orders: "api/dashboard/orders",
@@ -45,13 +48,15 @@ export default class Page {
   initEventListeners() {
     this.components.rangePicker.element.addEventListener(
       "date-select",
-      function (event) {
-        const { from, to } = event.detail;
-
-        this.updateComponents(from, to);
-      }.bind(this)
+      this.onDateSelect
     );
   }
+
+  onDateSelect = (event) => {
+    const { from, to } = event.detail;
+
+    this.updateComponents(from, to);
+  };
 
   initComponents() {
     const now = new Date();
@@ -103,23 +108,25 @@ export default class Page {
   }
 
   renderComponents() {
-    Object.keys(this.components).forEach(
-      function (component) {
-        const root = this.subElements[component];
-        const { element } = this.components[component];
+    Object.keys(this.components).forEach((component) => {
+      const root = this.subElements[component];
+      const { element } = this.components[component];
 
-        root.append(element);
-      }.bind(this)
-    );
+      root.append(element);
+    });
   }
 
   async updateComponents(from, to) {
+    this.progress.style.display = "block";
+
     const data = await this.loadData(from, to);
 
     this.components.sortableTable.update(data);
     this.components.ordersChart.update(from, to);
     this.components.salesChart.update(from, to);
     this.components.customersChart.update(from, to);
+
+    this.progress.style.display = "none";
   }
 
   loadData(from, to) {
@@ -135,14 +142,12 @@ export default class Page {
     return fetchJson(url);
   }
 
-  clearComponents(components = this.components) {
-    Object.values(components).forEach(
-      function (component) {
-        component.destroy();
-      }.bind(this)
-    );
-    components = {};
-  }
+  clearComponents = () => {
+    Object.values(this.components).forEach((component) => {
+      component.destroy();
+    });
+    this.components = {};
+  };
 
   render() {
     const wrapper = document.createElement("div");
@@ -154,6 +159,8 @@ export default class Page {
     this.initComponents();
     this.renderComponents();
     this.initEventListeners();
+
+    this.progress.style.display = "none";
 
     return this.element;
   }
